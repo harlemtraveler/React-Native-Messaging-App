@@ -1,6 +1,8 @@
 import { StyleSheet, Text, View } from 'react-native';
 import React, { Component } from 'react';
 
+import Status from './components/Status';
+
 export default class App extends Component {
   renderMessageList() {
     return (
@@ -23,6 +25,7 @@ export default class App extends Component {
   render() {
     return (
       <View style={styles.container}>
+        <Status />
         {this.renderMessageList()}
         {this.renderToolbar()}
         {this.renderInputMethodEditor()}
@@ -49,13 +52,13 @@ const styles = StyleSheet.create({
     borderTopColor: 'rgba(0,0,0,0.04)',
     backgroundColor: 'white',
   },
-  fullscreenOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'black',
-    zIndex: 2,
-  },
-  fullscreenImage: {
-    flex: 1,
-    resizeMode: 'contain',
-  },
+  // fullscreenOverlay: {
+  //   ...StyleSheet.absoluteFillObject,
+  //   backgroundColor: 'black',
+  //   zIndex: 2,
+  // },
+  // fullscreenImage: {
+  //   flex: 1,
+  //   resizeMode: 'contain',
+  // },
 });
