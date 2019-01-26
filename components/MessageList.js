@@ -1,12 +1,21 @@
-import { FlatList, StyleSheet } from 'react-native';
+import {
+  Text,
+  View,
+  Image,
+  FlatList,
+  StyleSheet,
+  TouchableOpacity
+} from 'react-native';
 import React, { Component } from 'react';
-import PropTypes form 'prop-types';
+import PropTypes from 'prop-types';
+import { MapView } from 'expo';
+
 import { MessageShape } from '../utils/MessageUtils';
 
 const keyExtractor = item => item.id.toString();
 
 export default class MessageList extends Component {
-  static PropTypes = {
+  static propTypes = {
     // Passing PropTypes defined in MessageShape
     messages: PropTypes.arrayOf(MessageShape).isRequired,
     onPressMessage: PropTypes.func,
@@ -16,10 +25,47 @@ export default class MessageList extends Component {
     onPressMessage: () => {},
   };
 
-  renderMessageItem = ({ item }) => {};
+  renderMessageBody = ({ type, text, uri, coordinate }) => {
+    switch (type) {
+      case 'text':
+        return (
+          <View style={styles.messageBubble}>
+            <Text style={styles.text}>{text}</Text>
+          </View>
+        );
+      case 'image':
+        return <Image style={styles.image} source={{ uri }} />;
+      case 'location':
+        return (
+          <MapView
+            style={styles.map}
+            initialRegion={{
+              ...coordinate,
+              latitudeDelta: 0.08,
+              longitudeDelta: 0.04,
+            }}>
+            <MapView.Marker coordinate={coordinate} />
+          </MapView>
+        );
+      default:
+        return null;
+    }
+  };
+
+  renderMessageItem = ({ item }) => {
+    const { onPressMessage } = this.props;
+
+    return (
+      <View key={item.id} style={styles.messageRow}>
+        <TouchableOpacity onPress={() => onPressMessage(item)}>
+          {this.renderMessageBody(item)}
+        </TouchableOpacity>
+      </View>
+    );
+  };
 
   render() {
-    const { messages } this.props;
+    const { messages } = this.props;
 
     return (
       <FlatList
@@ -28,7 +74,7 @@ export default class MessageList extends Component {
         data={messages}
         renderItem={this.renderMessageItem}
         keyExtractor={keyExtractor}
-        keyboardShouldPersistTaps={'handled'} 
+        keyboardShouldPersistTaps={'handled'}
       />
     );
   }
