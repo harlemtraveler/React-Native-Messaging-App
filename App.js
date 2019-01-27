@@ -1,4 +1,12 @@
-import { Text, View, Alert, StyleSheet } from 'react-native';
+import {
+  Text,
+  View,
+  Alert,
+  Image,
+  StyleSheet,
+  BackHandler,
+  TouchableHighlight
+} from 'react-native';
 import React, { Component } from 'react';
 
 import Status from './components/Status';
@@ -20,6 +28,28 @@ export default class App extends Component {
         longitude: -122.4324,
       }),
     ],
+    fullscreenImageId: null,
+  };
+
+  componentWillMount() {
+    this.subscription = BackHandler.addEventListener('hardwareBackPress', () => {
+      const { fullscreenImageId } = this.state;
+
+      if (fullscreenImageId) {
+        this.dismissFullscreenImage();
+        return true;
+      }
+
+      return false;
+    });
+  }
+
+  componentWillUnmount() {
+    this.subscription.remove();
+  }
+
+  dismissFullscreenImage = () => {
+    this.setState({ fullscreenImageId: null });
   };
 
   handlePressMessage = ({ id, type }) => {
@@ -45,6 +75,9 @@ export default class App extends Component {
             },
           ],
         );
+        break;
+      case 'image':
+        this.setState({ fullscreenImageId: id });
         break;
       default:
         break;
@@ -76,6 +109,26 @@ export default class App extends Component {
     );
   }
 
+  renderFullscreenImage = () => {
+    const { messages, fullscreenImageId } = this.state;
+
+    if (!fullscreenImageId) return null;
+
+    const image = messages.find(message => message.id === fullscreenImageId);
+
+    if (!image) return null;
+
+    const { uri } = image;
+
+    return (
+      <TouchableHighlight
+        style={styles.fullscreenOverlay}
+        onPress={this.dismissFullscreenImage}>
+        <Image style={styles.fullscreenImage} source={{ uri }} />
+      </TouchableHighlight>
+    );
+  };
+
   render() {
     return (
       <View style={styles.container}>
@@ -83,6 +136,7 @@ export default class App extends Component {
         {this.renderMessageList()}
         {this.renderToolbar()}
         {this.renderInputMethodEditor()}
+        {this.renderFullscreenImage()}
       </View>
     );
   }
@@ -106,13 +160,13 @@ const styles = StyleSheet.create({
     borderTopColor: 'rgba(0,0,0,0.04)',
     backgroundColor: 'white',
   },
-  // fullscreenOverlay: {
-  //   ...StyleSheet.absoluteFillObject,
-  //   backgroundColor: 'black',
-  //   zIndex: 2,
-  // },
-  // fullscreenImage: {
-  //   flex: 1,
-  //   resizeMode: 'contain',
-  // },
+  fullscreenOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'black',
+    zIndex: 2,
+  },
+  fullscreenImage: {
+    flex: 1,
+    resizeMode: 'contain',
+  },
 });
