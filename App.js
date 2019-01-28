@@ -98,7 +98,10 @@ export default class App extends Component {
         );
         break;
       case 'image':
-        this.setState({ fullscreenImageId: id });
+        this.setState({
+          fullscreenImageId: id,
+          isInputFocused: false
+        });
         break;
       default:
         break;
@@ -134,7 +137,7 @@ export default class App extends Component {
           onSubmit={this.handleSubmit}
           onChangeFocus={this.handleChangeFocus}
           onPressCamera={this.handlePressToolbarCamera}
-          onPressLocation={this.handlePressToolbarLocation} 
+          onPressLocation={this.handlePressToolbarLocation}
         />
       </View>
     );
