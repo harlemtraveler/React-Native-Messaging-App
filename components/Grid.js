@@ -19,13 +19,30 @@ export default class Grid extends Component {
     itemMargin: StyleSheet.hairlineWidth,
   };
 
-  renderGridItem = info => {};
+  renderGridItem = info => {
+    const { index } = info;
+    const { renderItem, numColumns, itemMargin } = this.props;
+
+    const { width } = Dimensions.get('window');
+
+    const size = PixelRatio.roundToNearestPixel(
+      (width - itemMargin * (numColumns - 1)) / numColumns,
+    );
+
+    // Don't want to include `marginLeft` on first item of row
+    const marginLeft = index % numColumns === 0 ? 0 : itemMargin;
+
+    // Don't want to include `marginTop` on first row of Grid
+    const marginTop = index < numColumns ? 0 : itemMargin;
+
+    return renderItem({ ...info, size, marginLeft, marginTop });
+  };
 
   render() {
     return (
       <FlatList
         {...this.props}
-        renderItem={this.renderGridItem} 
+        renderItem={this.renderGridItem}
       />
     );
   }

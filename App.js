@@ -16,6 +16,7 @@ import {
 } from './utils/MessageUtils';
 import Status from './components/Status';
 import Toolbar from './components/Toolbar';
+import ImageGrid from './components/ImageGrid';
 import MessageList from './components/MessageList';
 
 export default class App extends Component {
@@ -136,7 +137,9 @@ export default class App extends Component {
 
   renderInputMethodEditor() {
     return (
-      <View style={styles.inputMethodEditor}></View>
+      <View style={styles.inputMethodEditor}>
+        <ImageGrid />
+      </View>
     );
   }
 
