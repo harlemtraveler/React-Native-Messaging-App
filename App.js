@@ -15,6 +15,7 @@ import {
   createLocationMessage
 } from './utils/MessageUtils';
 import Status from './components/Status';
+import Toolbar from './components/Toolbar';
 import MessageList from './components/MessageList';
 
 export default class App extends Component {
@@ -29,6 +30,7 @@ export default class App extends Component {
       }),
     ],
     fullscreenImageId: null,
+    isInputFocused: false,
   };
 
   componentWillMount() {
@@ -50,6 +52,25 @@ export default class App extends Component {
 
   dismissFullscreenImage = () => {
     this.setState({ fullscreenImageId: null });
+  };
+
+  handlePressToolbarCamera = () => {};
+
+  handlePressToolbarLocation = () => {};
+
+  handleChangeFocus = isFocused => {
+    this.setState({ isInputFocused: isFocused });
+  };
+
+  handleSubmit = text => {
+    const { messages } = this.state;
+
+    this.setState({
+      messages: [
+        createTextMessage(text),
+        ...messages
+      ],
+    });
   };
 
   handlePressMessage = ({ id, type }) => {
@@ -104,8 +125,18 @@ export default class App extends Component {
   }
 
   renderToolbar() {
+    const { isInputFocused } = this.state;
+
     return (
-      <View style={styles.toolbar}></View>
+      <View style={styles.toolbar}>
+        <Toolbar
+          isFocused={isInputFocused}
+          onSubmit={this.handleSubmit}
+          onChangeFocus={this.handleChangeFocus}
+          onPressCamera={this.handlePressToolbarCamera}
+          onPressLocation={this.handlePressToolbarLocation} 
+        />
+      </View>
     );
   }
 

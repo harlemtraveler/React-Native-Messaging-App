@@ -96,7 +96,7 @@ export default class Toolbar extends Component {
             value={text}
             onChangeText={this.handleChangeText}
             onSubmitEditing={this.handleSubmitEditing}
-            ref={this.setInputRef}
+            ref={this.setInputRef} // Instance is the param
             onFocus={this.handleFocus}
             onBlur={this.handleBlur}
           />
