@@ -56,7 +56,20 @@ export default class App extends Component {
 
   handlePressToolbarCamera = () => {};
 
-  handlePressToolbarLocation = () => {};
+  handlePressToolbarLocation = () => {
+    const { messages } = this.state;
+
+    navigator.geolocation.getCurrentPosition((position) => {
+      const { coords: {latitude, longitude} } = position;
+
+      this.setState({
+        messages: [
+          createLocationMessage({ latitude, longitude, }),
+          ...messages,
+        ],
+      });
+    });
+  };
 
   handleChangeFocus = isFocused => {
     this.setState({ isInputFocused: isFocused });
