@@ -9,13 +9,13 @@ import {
 } from 'react-native';
 import React, { Component } from 'react';
 
-import Status from './components/Status';
-import MessageList from './components/MessageList';
 import {
   createTextMessage,
   createImageMessage,
   createLocationMessage
 } from './utils/MessageUtils';
+import Status from './components/Status';
+import MessageList from './components/MessageList';
 
 export default class App extends Component {
   state = {
