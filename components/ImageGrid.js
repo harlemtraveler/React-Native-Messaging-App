@@ -5,6 +5,7 @@ import {
   TouchableOpacity
 } from 'react-native';
 import PropTypes from 'prop-types';
+import { Permissions } from 'expo';
 import React, { Component } from 'react';
 
 import Grid from './Grid';
@@ -20,13 +21,39 @@ export default class ImageRoll extends Component {
     onPressImage: () => {},
   };
 
+  // Not Stateful: Doesn't directly affect component rendering
+  loading = false;
+  cursor = null;
+
   state = {
-    images: [
-      { uri: 'https://picsum.photos/600/600?image=10' },
-      { uri: 'https://picsum.photos/600/600?image=20' },
-      { uri: 'https://picsum.photos/600/600?image=30' },
-      { uri: 'https://picsum.photos/600/600?image=40' },
-    ],
+    images: [],
+  };
+
+  componentDidMount() {
+    this.getImages();
+  }
+
+  getImages = async after => {
+    const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+
+    if (status !== 'granted') {
+      console.log('Camera roll permission denied');
+      return;
+    }
+
+    const results = await CameraRoll.getPhotos({ first: 20, });
+
+    const { edges } = results;
+
+    const loadedImages = edges.map(item => item.node.image);
+
+    this.setState({ images: loadedImages });
+  }
+
+  getNextImages = () => {
+    if (!this.cursor) return;
+
+    this.getImages(this.cursor);
   };
 
   renderItem = ({ item: { uri }, size, marginTop, marginLeft }) => {
@@ -50,6 +77,7 @@ export default class ImageRoll extends Component {
         data={images}
         renderItem={this.renderItem}
         keyExtractor={keyExtractor}
+        onEndReached={this.getNextImages}
       />
     );
   }
@@ -61,3 +89,16 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
+
+
+/*
+  Code for State's Test Images:
+
+  images: [
+    { uri: 'https://picsum.photos/600/600?image=10' },
+    { uri: 'https://picsum.photos/600/600?image=20' },
+    { uri: 'https://picsum.photos/600/600?image=30' },
+    { uri: 'https://picsum.photos/600/600?image=40' },
+  ],
+
+*/
