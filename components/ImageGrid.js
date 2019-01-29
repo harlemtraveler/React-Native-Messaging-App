@@ -34,6 +34,8 @@ export default class ImageRoll extends Component {
   }
 
   getImages = async after => {
+    if (this.loading) return;
+
     const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
 
     if (status !== 'granted') {
@@ -41,14 +43,27 @@ export default class ImageRoll extends Component {
       return;
     }
 
-    const results = await CameraRoll.getPhotos({ first: 20, });
+    this.loading = true;
 
-    const { edges } = results;
+    const results = await CameraRoll.getPhotos({
+      first: 20,
+      after,
+    });
+
+    const { edges, page_info: { has_next_page, end_cursor } } = results;
 
     const loadedImages = edges.map(item => item.node.image);
 
-    this.setState({ images: loadedImages });
-  }
+    this.setState(
+      {
+        images: this.state.images.concat(loadedImages),
+      },
+      () => {
+        this.loading = false;
+        this.cursor = has_next_page ? end_cursor : null;
+      },
+    );
+  };
 
   getNextImages = () => {
     if (!this.cursor) return;
@@ -57,6 +72,8 @@ export default class ImageRoll extends Component {
   };
 
   renderItem = ({ item: { uri }, size, marginTop, marginLeft }) => {
+    const { onPressImage } = this.props;
+
     const style = {
       width: size,
       height: size,
@@ -65,7 +82,13 @@ export default class ImageRoll extends Component {
     };
 
     return (
-      <Image source={{ uri }} style={style} />
+      <TouchableOpacity
+        key={uri}
+        activeOpacity={0.75}
+        onPress={() => onPressImage(uri)}
+        style={style}>
+        <Image source={{ uri }} style={styles.image} />
+      </TouchableOpacity>
     );
   };
 

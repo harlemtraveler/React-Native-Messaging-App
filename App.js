@@ -72,6 +72,14 @@ export default class App extends Component {
     });
   };
 
+  handlePressImage = uri => {
+    const { messages } = this.state;
+
+    this.setState({
+      messages: [createImageMessage(uri), ...messages],
+    });
+  };
+
   handleChangeFocus = isFocused => {
     this.setState({ isInputFocused: isFocused });
   };
@@ -135,13 +143,11 @@ export default class App extends Component {
     );
   }
 
-  renderInputMethodEditor() {
-    return (
-      <View style={styles.inputMethodEditor}>
-        <ImageGrid />
-      </View>
-    );
-  }
+  renderInputMethodEditor = () => (
+    <View style={styles.inputMethodEditor}>
+      <ImageGrid onPressImage={this.handlePressImage} />
+    </View>
+  );
 
   renderToolbar() {
     const { isInputFocused } = this.state;
